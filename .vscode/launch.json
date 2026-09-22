@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": "Hello World"
+            "args": "C:\\Users\\croy13\\Repos\\NAND403_A26_Ateliers\\drinks.json"
         }
     ]
 }
