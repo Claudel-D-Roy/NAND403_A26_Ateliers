@@ -4,7 +4,7 @@
 
 #Setup maya - l'extention -> Maya Python, permet de coder dans vs code et l'executer dans Maya, aller chercher l'interpreter de mayapy.exe
 #from maya import cmds;cmds.commandPort(name='127.0.0.1:7002', sourceType='python', echoOutput=True) dans le window script editor de maya
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
  
 class MessageBoard(QWidget): #Parent QWidget donc hérite de QWidget
     def __init__(self): #Constructeur
@@ -15,18 +15,28 @@ class MessageBoard(QWidget): #Parent QWidget donc hérite de QWidget
     def create_ui(self):
         layout = QVBoxLayout(self)
         label = QLabel("Message board")
-        textEdit = QLineEdit()
-        button = QPushButton()
+        global text_edit
+        text_edit = QLineEdit()
+        button = QPushButton("Ok")
+        
 
         
         layout.addWidget(label)
-        layout.addWidget(textEdit)
+        layout.addWidget(text_edit)
+        layout.addWidget(button)
+
+        button.clicked.connect(lambda : self.on_click())
+
 
     def on_click(self):
-        #QMessageBox
-        
-        
- 
+         QMessageBox.information(
+            self,
+            'Information',
+            f'{text_edit.text()}'
+            )
+       
+
+
 def main():
     global widget
     try:
