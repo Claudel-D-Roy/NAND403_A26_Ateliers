@@ -4,11 +4,10 @@ from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
     QVBoxLayout,
-    QHBoxLayout,
-    QLineEdit,
     QLabel,
     QGridLayout,
-    QSpinBox 
+    QSpinBox,
+    QDoubleSpinBox
 )
 
 class RandomGenerator(QWidget):
@@ -24,6 +23,7 @@ class RandomGenerator(QWidget):
         grid = QGridLayout()
 
         label_object = QLabel("Number of fences")
+        label_spaces = QLabel("Spaces")  
 
         label_pos = QLabel("Position")
         label_posX = QLabel("X")
@@ -36,36 +36,41 @@ class RandomGenerator(QWidget):
         label_scalZ = QLabel("Z")
 
         self.nbr_fences = QSpinBox()
-        self.edit_posX = QSpinBox()
-        self.edit_posY = QSpinBox()
-        self.edit_posZ = QSpinBox()
+        self.espace = QSpinBox()
+        self.edit_posX = QDoubleSpinBox()
+        self.edit_posY = QDoubleSpinBox()
+        self.edit_posZ = QDoubleSpinBox()
 
-        self.edit_scalx = QSpinBox()
-        self.edit_scaly = QSpinBox()
-        self.edit_scalz = QSpinBox()
+        self.edit_scalx = QDoubleSpinBox()
+        self.edit_scaly = QDoubleSpinBox()
+        self.edit_scalz = QDoubleSpinBox()
 
         grid.addWidget(label_object, 0, 0)
         grid.addWidget(self.nbr_fences, 0, 2)
 
-        grid.addWidget(label_pos, 1, 0)
-        grid.addWidget(label_posX, 1, 1)
-        grid.addWidget(self.edit_posX, 1, 2)
+        grid.addWidget(label_spaces, 1, 0)
+        grid.addWidget(self.espace, 1, 2)
 
-        grid.addWidget(label_posY, 2, 1)
-        grid.addWidget(self.edit_posY, 2, 2)
 
-        grid.addWidget(label_posZ, 3, 1)
-        grid.addWidget(self.edit_posZ , 3, 2)
+        grid.addWidget(label_pos, 2, 0)
+        grid.addWidget(label_posX, 2, 1)
+        grid.addWidget(self.edit_posX, 2, 2)
 
-        grid.addWidget(label_scale, 4, 0)
-        grid.addWidget(label_scalX, 4, 1)
-        grid.addWidget(self.edit_scalx, 4, 2)
+        grid.addWidget(label_posY, 3, 1)
+        grid.addWidget(self.edit_posY, 3, 2)
 
-        grid.addWidget(label_scalY, 5, 1)
-        grid.addWidget(self.edit_scaly, 5, 2)
+        grid.addWidget(label_posZ, 4, 1)
+        grid.addWidget(self.edit_posZ , 4, 2)
 
-        grid.addWidget(label_scalZ, 6, 1)
-        grid.addWidget(self.edit_scalz, 6, 2)
+        grid.addWidget(label_scale, 5, 0)
+        grid.addWidget(label_scalX, 5, 1)
+        grid.addWidget(self.edit_scalx, 5, 2)
+
+        grid.addWidget(label_scalY, 6, 1)
+        grid.addWidget(self.edit_scaly, 6, 2)
+
+        grid.addWidget(label_scalZ, 7, 1)
+        grid.addWidget(self.edit_scalz, 7, 2)
 
         layout.addLayout(grid)
 
@@ -82,21 +87,36 @@ class RandomGenerator(QWidget):
 
        scal_x = self.edit_scalx.value()
        scal_y = self.edit_scaly.value()
-       scal_z = self.edit_scalz.value()      
+       scal_z = self.edit_scalz.value()    
+       espace = self.espace.value()
 
-       for i in range(nb_obj):
-            fence1 = cmds.polyCube()[0]
-            cmds.move(pox, poy, poz, fence1, absolute = True)
-            cmds.scale(scal_x, scal_y + 5, scal_z, fence1, absolute = True)
+       post_h = 4.0                    
+       hauteur = post_h * scal_y         
+       bas = poy - hauteur / 2  
 
-            fence2 = cmds.polyCube()[0]
-            cmds.move(pox, poy + poy/2, poz, fence2, absolute = True)
-            cmds.scale(scal_x + 5, scal_y , scal_z, fence2, absolute = True)
+       init = cmds.polyCube(w = 0.4, h = post_h, d = 0.2 )[0]
+       cmds.move(pox, poy, poz, init, absolute = True)
+       cmds.scale(scal_x, scal_y, scal_z, init, absolute = True)
 
-            fence3 = cmds.polyCube()[0]
-            cmds.move(pox, poy - poy/2, poz, fence3, absolute = True)
-            cmds.scale(scal_x + 5, scal_y , scal_z, fence3, absolute = True)
+       for i in range(1, nb_obj):
+            new_init = cmds.duplicate()[0]
+            position_x = (pox + i) * espace
+            cmds.move(position_x, poy, poz, new_init)
+            print(f"post :  {position_x}")
 
+            for s in range(nb_obj - 1):
+                position_hor = pox + (s + 0.5) * espace
+                print(f"bar :  {position_hor}")
+                for ratio in (0.3, 0.7):
+                    new_init_horizontal = cmds.duplicate(init)[0]
+                    cmds.move(position_hor, bas + hauteur * ratio , poz, new_init_horizontal)
+                    cmds.rotate(90, 90, 0,new_init_horizontal)
+            
+    
+
+               
+
+            
 
 
 
