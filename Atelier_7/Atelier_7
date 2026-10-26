@@ -1,0 +1,22 @@
+from maya import cmds
+
+def play():
+    obj = "pCube1"
+    cmds.cutKey(obj, clear=True) 
+
+    cles = [(1,0.0), (50, 50.0), (100, 100)]
+    for frame, val in cles : 
+        cmds.setKeyframe(obj, attribute="translateX", value = val, time = frame) 
+
+    cmds.playbackOptions(playbackSpeed=1.0)
+    cmds.playbackOptions(minTime=1, maxTime=24)
+
+    cmds.currentTime(1)
+    cmds.play(forward=True)
+
+
+def main():
+    play()
+
+
+main()
