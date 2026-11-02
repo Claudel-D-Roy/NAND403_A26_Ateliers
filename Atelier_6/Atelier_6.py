@@ -112,13 +112,6 @@ class RandomGenerator(QWidget):
                     cmds.move(position_hor, bas + hauteur * ratio , poz, new_init_horizontal)
                     cmds.rotate(90, 90, 0,new_init_horizontal)
             
-    
-
-               
-
-            
-
-
 
 def main():
     global tool_window
