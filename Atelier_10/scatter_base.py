@@ -25,6 +25,8 @@ class Scatter(QWidget):
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle("Scatter")
         self.setMinimumWidth(250)
+        self.source = None
+        self.group = None 
         self.build_ui()
 
     def build_ui(self):
@@ -36,20 +38,28 @@ class Scatter(QWidget):
         self.count_spin.setRange(1, 100)
         self.count_spin.setValue(10)
         form.addRow("Copies", self.count_spin)
+        self.count_spin.valueChanged.connect(self.scatter)
+
 
         self.radius_spin = QDoubleSpinBox()
         self.radius_spin.setRange(1.0, 50.0)
         self.radius_spin.setValue(10.0)
         form.addRow("Radius", self.radius_spin)
+        self.radius_spin.valueChanged.connect(self.scatter)
 
         self.seed_spin = QSpinBox()
         self.seed_spin.setRange(0, 9999)
         form.addRow("Seed", self.seed_spin)
+        self.seed_spin.valueChanged.connect(self.scatter)
 
-        scatter_button = QPushButton("Scatter")
-       # scatter_button.valueChanged.connect(self.scatter)
-        #scatter_button.clicked.connect(self.scatter)
-        layout.addWidget(scatter_button)
+        self.count_spin.valueChanged.connect(self.scatter)
+        self.radius_spin.valueChanged.connect(self.scatter)
+        self.seed_spin.valueChanged.connect(self.scatter)
+
+        # scatter_button = QPushButton("Scatter")
+        # scatter_button.clicked.connect(self.scatter)
+        # layout.addWidget(scatter_button)
+
 
     def scatter(self):
         selection = cmds.ls(selection=True, transforms=True)
