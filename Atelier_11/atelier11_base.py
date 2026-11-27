@@ -26,6 +26,8 @@ class RockMaker(QDialog):
         super().__init__(maya_main_window())
         self.setWindowTitle("Rock Maker")
         self.setMinimumWidth(260)
+
+        self.current_rock = None
         self.build_ui()
 
     def build_ui(self):
@@ -37,6 +39,11 @@ class RockMaker(QDialog):
         self.amplitude_slider = self.add_slider(form, "Amplitude", 0, 100, 30, divisor=100)
         self.frequency_slider = self.add_slider(form, "Frequency", 5, 80, 30, divisor=10)
         self.seed_slider = self.add_slider(form, "Seed", 0, 100, 0)
+
+        self.subdivisions_slider.valueChanged.connect(self.update_rock)
+        self.amplitude_slider.valueChanged.connect(self.update_rock)
+        self.frequency_slider.valueChanged.connect(self.update_rock)
+        self.seed_slider.valueChanged.connect(self.update_rock)
 
         create_button = QPushButton("Create rock")
         create_button.clicked.connect(self.make_rock)
@@ -58,29 +65,34 @@ class RockMaker(QDialog):
         return slider
 
     def make_rock(self):
-        self.create_rock(
+        self.current_rock = self.create_rock(
             self.subdivisions_slider.value(),
             self.amplitude_slider.value() / 100,
-            self.frequency_slider.value() / 10,
+            self.frequency_slider.value() /10,
             self.seed_slider.value(),
         )
 
+
+    def update_rock(self):
+        if self.current_rock and cmds.objExists(self.current_rock):
+            cmds.delete(self.current_rock)
+        self.make_rock()
+
     def create_rock(self, subdivisions, amplitude, frequency, seed):
 
-        # étape 1 : créer une sphère
-        sphere = cmds.polySphere()[0]
+        self.sphere= cmds.polySphere(sx=subdivisions, sy=subdivisions)[0]
+        vertices = cmds.ls(f'{self.sphere}.vtx[*]', flatten=True)
 
+        for vertex in vertices:
+            pos_vertex = cmds.pointPosition(vertex, world=True)
+            bump = self.get_bump(pos_vertex[0], pos_vertex[1], pos_vertex[2], frequency, seed)
+            random_vertex = bump * amplitude
+          
+            cmds.move(pos_vertex[0] * random_vertex, pos_vertex[1] * random_vertex, pos_vertex[2] * random_vertex, vertex, r = True ) 
 
-        vertices = cmds.ls(f'{sphere}.vtx[*]')
-        
-
-        # étape 2 : faire une for loop sur chacun des vertices
-        
-        sphere = sphere(sx = subdivisions, sy = subdivisions)
-        # étape 3 : déplacer chaque vertex avec un valeur aléatoire (get_bump) * amplitude
-        pass
-
-    def get_bump(x, y, z, frequency, seed):
+        return self.sphere
+                               
+    def get_bump(self, x, y, z, frequency, seed):
         return (math.sin(x * frequency + seed)
                 + math.sin(y * frequency + seed * 2)
                 + math.sin(z * frequency + seed * 3)) / 3
